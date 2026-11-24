@@ -1,40 +1,78 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doudou WhatsApp Panel</title>
+<title>豆豆控制面板</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
-body{padding:20px;background:#f5f7fa}
-.box{background:white;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #00000012}
-button{width:100%;padding:14px;border:none;border-radius:10px;font-size:16px;margin:6px 0;cursor:pointer}
-.btn-green{background:#22c55e;color:white}
-.btn-blue{background:#3b82f6;color:white}
-.btn-orange{background:#f97316;color:white}
-.btn-gray{background:#9ca3af;color:white}
-.status{padding:10px;border-radius:8px;background:#eee;margin:8px 0}
+body{background:#f4f4f4;padding:16px;color:#222}
+.header-card{background:#156b48;color:#fff;border-radius:14px;padding:20px;margin-bottom:16px}
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.logo-box{width:70px;height:70px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#156b48;font-weight:bold;font-size:22px}
+.logo-text{font-size:28px;font-weight:bold}
+.lang-select{background:#fff;color:#156b48;border:0;border-radius:8px;padding:8px 12px;font-size:15px}
+.download-btn{width:100%;padding:14px;background:#fff;color:#156b48;border:0;border-radius:12px;font-weight:bold;font-size:16px;margin:12px 0}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.mode-card{background:#fff;border-radius:14px;padding:16px;text-align:center;border:2px solid transparent}
+.mode-card.active{background:#156b48;color:#fff;border-color:#156b48}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:16px 0}
+.tab{padding:10px 16px;background:#ddd;border-radius:8px;white-space:nowrap}
+.tab.active{background:#156b48;color:#fff}
+.panel-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px}
+.status-text{background:#eee;padding:12px;border-radius:8px;margin:8px 0;font-family:monospace;font-size:14px}
+.btn{width:100%;padding:13px;border:0;border-radius:10px;margin:6px 0;font-size:16px;font-weight:bold}
+.btn-green{background:#156b48;color:#fff}
+.btn-gray{background:#ddd;color:#222}
 </style>
 </head>
 <body>
-<h2>Doudou 控制面板</h2>
-<div class="box">
-  <div class="status" id="status">等待连接 AutoJS</div>
-  <button class="btn-green" onclick="sendCmd('start')">开始群发</button>
-  <button class="btn-orange" onclick="sendCmd('stop')">停止任务</button>
-  <button class="btn-blue" onclick="sendCmd('toggleMode')">切换无障碍开关</button>
-  <button class="btn-gray" onclick="sendCmd('toggleVoice')">语音控制 开/关</button>
+<div class="header-card">
+<div class="logo-row">
+<div class="logo-box">豆</div>
+<div class="logo-text">豆豆控制面板</div>
 </div>
+<select class="lang-select">
+<option>中文</option>
+<option>English</option>
+<option>Bahasa Malaysia</option>
+</select>
+</div>
+
+<div class="mode-row">
+<div class="mode-card active">群发模式</div>
+<div class="mode-card">调试模式</div>
+</div>
+
+<div class="tabs">
+<div class="tab active">任务</div>
+<div class="tab">名单</div>
+<div class="tab">消息模板</div>
+<div class="tab">设置</div>
+</div>
+
+<div class="panel-card">
+<h3>AutoJS 服务状态</h3>
+<div class="status-text" id="status">等待连接...</div>
+<button class="btn btn-green" onclick="sendCmd('ping')">测试连通</button>
+<button class="btn btn-green" onclick="sendCmd('start')">开始任务</button>
+<button class="btn btn-gray" onclick="sendCmd('stop')">停止任务</button>
+<button class="btn btn-gray" onclick="sendCmd('toggleAccess')">开关无障碍</button>
+<button class="btn btn-gray" onclick="sendCmd('toggleVoice')">开关语音控制</button>
+</div>
+
 <script>
-const host = "http://127.0.0.1:9000";
+const base = "http://127.0.0.1:9000";
+const statusEl = document.getElementById("status");
 async function sendCmd(cmd){
-  try{
-    const res = await fetch(host+"/cmd?action="+cmd);
-    const txt = await res.text();
-    document.getElementById("status").innerText = "返回："+txt;
-  }catch(e){
-    document.getElementById("status").innerText = "连接失败，请先运行AutoJS脚本";
-  }
+try{
+statusEl.textContent = "发送指令："+cmd;
+let res = await fetch(base+"/"+cmd);
+let txt = await res.text();
+statusEl.textContent = "返回："+txt;
+}catch(e){
+statusEl.textContent = "连接失败，请先运行AutoJS脚本！";
+}
 }
 </script>
 </body>
